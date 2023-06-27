@@ -9,6 +9,7 @@
 #include <linux/can/raw.h>
 #include <pthread.h>
 
+
 pthread_mutex_t mutex=PTHREAD_MUTEX_INITIALIZER;
 int data[8];
 int flag=0;
