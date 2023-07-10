@@ -9,6 +9,7 @@
 #include <linux/can/raw.h>
 #include <pthread.h>
 
-void * receiveCan();
-void * handleData();
-int sendCan(int id, int length,int * data);
+int initialCan(int canID)
+void * receiveCan(int s);
+//void * handleData();
+int sendCan(int s, int id, int length, int * data);
