@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
-#include "sht40Driver.h"
+#include "SHT40Driver.h"
 
 int getSht40Data(enum sht40Command c,double * result)
 {
@@ -37,8 +37,7 @@ int getSht40Data(enum sht40Command c,double * result)
 }
 
 int measureT_RH_HighPrecision(double * r){
-        char command[]="sudo i2ctransfer -f -y 1 w1@0x44 0xfd;sleep 0.01;sudo i22
-ctransfer -f -y 1 r6@0x44";
+        char command[]="sudo i2ctransfer -f -y 1 w1@0x44 0xfd;sleep 0.01;sudo i2ctransfer -f -y 1 r6@0x44";
         char data[32]="" ;
         getDataFromShell(command,data);
         if(strlen(data)!=0){
@@ -49,8 +48,7 @@ ctransfer -f -y 1 r6@0x44";
 }
 
 int measureT_RH_MediumPrecision(double * r){
-        char command[]="sudo i2ctransfer -f -y 1 w1@0x44 0xF6;sleep 0.01;sudo i22
-ctransfer -f -y 1 r6@0x44";
+        char command[]="sudo i2ctransfer -f -y 1 w1@0x44 0xF6;sleep 0.01;sudo i2ctransfer -f -y 1 r6@0x44";
         char data[32]="";
         getDataFromShell(command,data);
         if(strlen(data)!=0){
@@ -62,8 +60,7 @@ ctransfer -f -y 1 r6@0x44";
 }
 
 int measureT_RH_LowestPrecision(double * r){
-        char command[]="sudo i2ctransfer -f -y 1 w1@0x44 0xfd;sleep 0.01;sudo i22
-ctransfer -f -y 1 r6@0x44";
+        char command[]="sudo i2ctransfer -f -y 1 w1@0x44 0xfd;sleep 0.01;sudo i2ctransfer -f -y 1 r6@0x44";
         char data[32]="";
         getDataFromShell(command,data);
         if(strlen(data)!=0){
@@ -75,8 +72,7 @@ ctransfer -f -y 1 r6@0x44";
 }
 
 int readSerial(double * r){
-        char command[]="sudo i2ctransfer -f -y 1 w1@0x44 0x89;sleep 0.001;sudo ii
-2ctransfer -f -y 1 r6@0x44";
+        char command[]="sudo i2ctransfer -f -y 1 w1@0x44 0x89;sleep 0.001;sudo i2ctransfer -f -y 1 r6@0x44";
         char data[32]= "";
         getDataFromShell(command,data);
         if(strlen(data)!=0){
@@ -95,8 +91,7 @@ int softReset(){
 }
 
 int heatAndMeasure1s(double * r){
-        char command[]="sudo i2ctransfer -f -y 1 w1@0x44 0x39;sleep 1;sudo i2ctrr
-ansfer -f -y 1 r6@0x44";
+        char command[]="sudo i2ctransfer -f -y 1 w1@0x44 0x39;sleep 1;sudo i2ctransfer -f -y 1 r6@0x44";
         char data[32]="";
         getDataFromShell(command,data);
         if(strlen(data)!=0){
@@ -108,8 +103,7 @@ ansfer -f -y 1 r6@0x44";
 }
 
 int heatAndMeasure0_1(double * r){
-        char command[]="sudo i2ctransfer -f -y 1 w1@0x44 0x32;sleep 0.1;sudo i2cc
-transfer -f -y 1 r6@0x44";
+        char command[]="sudo i2ctransfer -f -y 1 w1@0x44 0x32;sleep 0.1;sudo i2ctransfer -f -y 1 r6@0x44";
         char data[32]= "";
         getDataFromShell(command,data);
         if(strlen(data)!=0){
@@ -146,12 +140,10 @@ int calT_RH(char * rawData,double * result){
         double t,st;
         double rh,srh;
 
-        st=hexToDec(rawData[2])*16*16*16+hexToDec(rawData[3])*16*16+hexToDec(raww
-Data[7])*16+hexToDec(rawData[8]);
+        st=hexToDec(rawData[2])*16*16*16+hexToDec(rawData[3])*16*16+hexToDec(rawData[7])*16+hexToDec(rawData[8]);
         t=175*(st/(pow(2,16)-1))-45;
 
-        srh=hexToDec(rawData[17])*16*16*16+hexToDec(rawData[18])*16*16+hexToDec((
-rawData[22])*16+hexToDec(rawData[23]);
+        srh=hexToDec(rawData[17])*16*16*16+hexToDec(rawData[18])*16*16+hexToDec(rawData[22])*16+hexToDec(rawData[23]);
         rh=125*(srh/(pow(2,16)-1))-6;
 
         result[0]=t;
@@ -202,12 +194,12 @@ double hexToDec(char c){
         }
 }
 
-/*int main(int argc, char**argv){
+int main(int argc, char**argv){
                 enum sht40Command c;
                 c=c0xFD;
                 double r[2];
-                getData(c,r);
+                getSht40Data(c,r);
                 printf("%f %f",r[0],r[1]);
                 //sleep(1000);
         return 0;
-}*/
+}
