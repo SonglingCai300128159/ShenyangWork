@@ -20,7 +20,7 @@ int initialI2C(){
     return fd;
 }
 
-int sendCommand(int fd, enum sht40Command c){
+int sendi2cCommand(int fd, enum sht40Command c){
     char buff=0;
     switch(c){
         case 1:
@@ -74,7 +74,7 @@ int sendCommand(int fd, enum sht40Command c){
     return 1;
 }
 
-int receiveData(int fd,sht40Data * d){
+int receivei2cData(int fd,sht40Data * d){
     char r[6]="";
     struct i2c_msg msg2 = {
         .addr = 0x44,
@@ -108,8 +108,8 @@ int main(){
     enum sht40Command co=measureHighPrecision;
     
     f=initialI2C();
-    sendCommand(f, co);
-    receiveData(f,&sd);
+    sendi2cCommand(f, co);
+    receivei2cData(f,&sd);
     
     printf("%f %f\n",sd.temperature,sd.humidity);
     

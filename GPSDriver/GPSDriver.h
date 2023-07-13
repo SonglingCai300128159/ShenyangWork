@@ -15,6 +15,6 @@ typedef struct{
 }gpsData;
 
 int gpsInitial();
-int getGpsData(gpsData *);
+int getGpsData(int serialPort, gpsData *);
 
 

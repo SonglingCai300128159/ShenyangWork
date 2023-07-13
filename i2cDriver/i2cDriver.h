@@ -20,5 +20,5 @@ enum sht40Command{
 };
 
 int initialI2C();
-int sendCommand(int fd, enum sht40Command c);
-int receiveData(int fd,sht40Data * d);
+int sendi2cCommand(int fd, enum sht40Command c);
+int receivei2cData(int fd,sht40Data * d);

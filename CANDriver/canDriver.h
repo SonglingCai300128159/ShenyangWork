@@ -10,6 +10,6 @@
 #include <pthread.h>
 
 int initialCan(int canID)
-void * receiveCan(int s);
+int receiveCan(int s,int * recData);
 //void * handleData();
 int sendCan(int s, int id, int length, int * data);

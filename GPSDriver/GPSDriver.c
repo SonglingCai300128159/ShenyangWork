@@ -6,10 +6,8 @@
 #include <stdlib.h>
 #include "GPSDriver.h"
 
-int serialPort;
-
 int gpsInitial(){
-	serialPort = open("/dev/ttyUSB0", O_RDWR);
+	int serialPort = open("/dev/ttyUSB0", O_RDWR);
         if (serialPort < 0) {
                 perror("Error opening serial port");
                 return -1;
@@ -29,10 +27,11 @@ int gpsInitial(){
         tty.c_cflag &= ~PARENB;
         tty.c_cflag &= ~CSTOPB;
         tcsetattr(serialPort, TCSANOW, &tty);   //设置终端控制属性,TCSANOW：不等数据传输完毕就立即改变属性
+		return serialPort;
 }
 
 char buffer[1024]="";
-int getGpsData(gpsData * igd){
+int getGpsData(int serialPort,gpsData * igd){
                 char target[]="$GNGGA";
 		char *rawlgv;
 		char *rawlgd;
@@ -76,10 +75,10 @@ int getGpsData(gpsData * igd){
 
 int main() {
 	gpsData gd;
-	int f;
-	gpsInitial();
+	int f,g;
+	g=gpsInitial();
 	while(1){
-		f=getGpsData(&gd);
+		f=getGpsData(g,&gd);
 		if(f>0)	printf("%f%c %f%c %f\n",gd.latitude.value,gd.latitude.direction,gd.longitude.value,gd.longitude.direction, gd.height);
 	}
 	close(serialPort);

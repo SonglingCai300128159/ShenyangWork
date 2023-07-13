@@ -44,7 +44,7 @@ int batteryData(int serialPort,batteryStatue * b){
 	for(int i=0;i<34;i=i+1){
 		tempData[i]=0;
 		int j=read(serialPort,&tempData[i],1);
-		if(i<0) return -1;
+		//if(i<0) return -1;
 		//tempData[i]=temp;
 		//printf("%d %x\n",i,tempData[i]);
 	}

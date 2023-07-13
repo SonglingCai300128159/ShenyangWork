@@ -32,28 +32,21 @@ int initialCan(int canID){
 	return s;
 }
 
-void * receiveCan(int s){
-	while(1)
-	{
-		nbytes = read(s, &frame, sizeof(frame));
-		if(nbytes>0){
-			//pthread_mutex_lock(&mutex);
-			flag=1;
-			//printf("%x",frame.data[0]);
-			for(int i=0;i<frame.can_dlc;i++){
-				data[i]=frame.data[i];
-				//printf("%x",data[i]);
-			}
-			sendCan(s,0x0A,8,data);//转发数据
-			//pthread_mutex_unlock(&mutex);
+int receiveCan(int s,int * recData){
+	//int recData[8];
+	nbytes = read(s, &frame, sizeof(frame));
+	if(nbytes>0){
+		flag=1;
+		//printf("%x",frame.data[0]);
+		for(int i=0;i<frame.can_dlc;i++){
+			recData[i]=frame.data[i];
+			//printf("%x",data[i]);
 		}
-		/*if(nbytes > 0)
-		{
-			printf("ID=0x%X DLC=%d data[0]=0x%X\n", frame.can_id,frame.can_dlc, frame.data[0]);
-		}*/
+		return 1;
+		//sendCan(s,0x0A,8,data);//转发数据
 	}
-	close(s);
-	return 0;
+
+	return -1;
 }
 
 /*int handleData(int s){
@@ -77,18 +70,6 @@ int sendCan(int s,int id, int length,int * data){
 	return 1;
 }
 
-int dataTransferAndSend(int s,int * data){
-	switch(data[0]){
-		case 0x11:
-			straightMotion(s, data);
-			break;
-		case 0x22:
-			
-		
-
-	}
-}
-
 int straightMotion(int s, int * data){
 	int setSpeed[8]={0x11,0x11,data[2],data[3],data[4],data[5],data[6],(0x11+0x11+data[2]+data[3]+data[4]+data[5]+data[6])&0xff};
 	sendCan(s,0x0A,8,setSpeed);
@@ -106,7 +87,7 @@ int main(){
 	pthread_t threads[3];
 	int ret;
 	int s=initialCan(0x011);
-	ret=pthread_create(&threads[0],NULL,receiveCan,&s);
+	//ret=pthread_create(&threads[0],NULL,receiveCan,&s);
 	while(1){
 
 	}
