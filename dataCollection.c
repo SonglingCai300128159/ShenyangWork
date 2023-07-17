@@ -7,6 +7,7 @@
 #include "i2cDriver/i2cDriver.h"
 #include "GPSDriver/GPSDriver.h"
 #include "BatteryDriver/BatteryDriver.h"
+#include "RS232Driver/RS232Driver.h"
 #include "dataCollection.h"
 
 
@@ -32,6 +33,11 @@ int initialSensor(int canID,int masterID,sensorIDs * s){
         return -1;
     }
     s->masterID=masterID;
+    s->RS232ID=RS232SInitial();
+    if(s->RS232ID<0){
+        printf("Initial RS232 Error\n");
+        return -1;
+    }
     return 1;
 }
 
@@ -79,7 +85,7 @@ int sendTRHData(sensorIDs * s){
     data[4]=(int)sd.humidity;
     data[5]=(sd.humidity-data[4])*100;
 
-    return sendCan(s->openCanID,s->masterID,8,data);
+    return write(s->RS232ID,data,8);
 }
 
 int sendGPSData(sensorIDs * s){
@@ -101,7 +107,7 @@ int sendGPSData(sensorIDs * s){
     data[6]=(int)gd.height;
     data[7]=(gd.height-data[6])*100;
     
-    return sendCan(s->openCanID,s->masterID,8,data);
+    return write(s->RS232ID,data,8);
 }
 
 int sendBatteryData(sensorIDs * s){
@@ -119,5 +125,5 @@ int sendBatteryData(sensorIDs * s){
     data[6]=(int)b.remainingCapacity;
     data[7]=(b.remainingCapacity-data[6])*100;
     
-    return sendCan(s->openCanID,s->masterID,8,data);
+    return write(s->RS232ID,data,8);
 }

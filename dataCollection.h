@@ -7,6 +7,7 @@
 #include "i2cDriver/i2cDriver.h"
 #include "GPSDriver/GPSDriver.h"
 #include "BatteryDriver/BatteryDriver.h"
+#include "RS232Driver/RS232Driver.h"
 
 
 typedef struct{
@@ -15,6 +16,7 @@ typedef struct{
     int gpsID;
     int batteryID;
     int masterID;
+    int RS232ID;
 }sensorIDs;
 
 int initialSensor(int canID,int masterID,sensorIDs * s);
