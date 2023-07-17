@@ -1,3 +1,6 @@
+#ifndef _BATTERYDRIVER_H
+#define _BATTERYDRIVER_H 
+
 #include <stdio.h>
 #include <string.h>
 #include <unistd.h>
@@ -15,3 +18,4 @@ typedef struct{
 
 int batteryInit();
 int batteryData(int serialPort,batteryStatue * b);
+#endif

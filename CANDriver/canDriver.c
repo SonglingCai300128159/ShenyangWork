@@ -34,7 +34,8 @@ int initialCan(int canID){
 
 int receiveCan(int s,int * recData){
 	//int recData[8];
-	nbytes = read(s, &frame, sizeof(frame));
+	struct can_frame frame;
+	int nbytes = read(s, &frame, sizeof(frame));
 	if(nbytes>0){
 		flag=1;
 		//printf("%x",frame.data[0]);
@@ -62,15 +63,16 @@ int receiveCan(int s,int * recData){
 }*/
 
 int sendCan(int s,int id, int length,int * data){
-	frame[0].can_id = id;
-	frame[0].can_dlc = length;
+	struct can_frame frame;
+	frame.can_id = id;
+	frame.can_dlc = length;
 	for(int i=0;i<length;i++)
-		frame[0].data[i]=data[i];
-	nbytes = write(s, &frame[0], sizeof(frame[0]));
+		frame.data[i]=data[i];
+	int nbytes = write(s, &frame, sizeof(frame));
 	return 1;
 }
 
-int straightMotion(int s, int * data){
+/*int straightMotion(int s, int * data){
 	int setSpeed[8]={0x11,0x11,data[2],data[3],data[4],data[5],data[6],(0x11+0x11+data[2]+data[3]+data[4]+data[5]+data[6])&0xff};
 	sendCan(s,0x0A,8,setSpeed);
 	if(data[1]==0xAA)
@@ -81,9 +83,9 @@ int straightMotion(int s, int * data){
 		int setDirection[8]={0x11,0x22,data[2],0xFF,0x00,0x00,0x00,(0x11+0x22+data[2]+data[1]+0x00+0x00+0x00)&0xff};
 	sendCan(s,0x0A,8,setDirection);
 	return 1;
-}
+}*/
 
-int main(){
+/*int main(){
 	pthread_t threads[3];
 	int ret;
 	int s=initialCan(0x011);
@@ -92,5 +94,5 @@ int main(){
 
 	}
 	return 0;
-}
+}*/
 

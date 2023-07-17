@@ -1,3 +1,5 @@
+#ifndef _CANDRIVER_H
+#define _CANDRIVER_H
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -9,7 +11,8 @@
 #include <linux/can/raw.h>
 #include <pthread.h>
 
-int initialCan(int canID)
+int initialCan(int canID);
 int receiveCan(int s,int * recData);
 //void * handleData();
 int sendCan(int s, int id, int length, int * data);
+#endif

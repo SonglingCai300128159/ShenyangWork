@@ -73,7 +73,7 @@ int getGpsData(int serialPort,gpsData * igd){
 	return -1;
 }
 
-int main() {
+/*int main() {
 	gpsData gd;
 	int f,g;
 	g=gpsInitial();
@@ -81,8 +81,8 @@ int main() {
 		f=getGpsData(g,&gd);
 		if(f>0)	printf("%f%c %f%c %f\n",gd.latitude.value,gd.latitude.direction,gd.longitude.value,gd.longitude.direction, gd.height);
 	}
-	close(serialPort);
+	//close(serialPort);
 	return 0;
 
-}
+}*/
 

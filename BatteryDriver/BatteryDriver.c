@@ -57,13 +57,13 @@ int batteryData(int serialPort,batteryStatue * b){
 	return 1;
 }
 
-int main(){	
+/*int main(){	
 	batteryStatue b;
 	int fd;
 	fd=batteryInit();
 	batteryData(fd,&b);
 	printf("%fV %fA %fmAH %fmAH %fC %Fc\n",b.totalVotage,b.totalCurrent,b.remainingCapacity,b.totalCapacity,b.temp[0],b.temp[1]);
 	return 0;
-}
+}*/
 
 

@@ -1,3 +1,5 @@
+#ifndef _GPSDRIVER_H
+#define _GPSDRIVER_H
 #include <string.h>
 #include <unistd.h>
 #include <fcntl.h>
@@ -16,5 +18,5 @@ typedef struct{
 
 int gpsInitial();
 int getGpsData(int serialPort, gpsData *);
-
+#endif
 

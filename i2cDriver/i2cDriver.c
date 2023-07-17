@@ -102,7 +102,7 @@ int receivei2cData(int fd,sht40Data * d){
     return 1;
 }
 
-int main(){
+/*int main(){
     sht40Data sd;
     int f;
     enum sht40Command co=measureHighPrecision;
@@ -115,4 +115,4 @@ int main(){
     
     return 0;
     
-}
+}*/

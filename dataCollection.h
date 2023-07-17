@@ -25,3 +25,4 @@ int sendSensorData(int * command,sensorIDs * s);
 int sendTRHData(sensorIDs * s);
 int sendGPSData(sensorIDs * s);
 int sendBatteryData(sensorIDs * s);
+int main();

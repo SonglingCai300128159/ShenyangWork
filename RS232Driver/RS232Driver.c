@@ -26,7 +26,13 @@ int RS232SInitial(){
         tty.c_cflag |= CS8;
         tty.c_cflag &= ~PARENB;
         tty.c_cflag &= ~CSTOPB;
+        tty.c_iflag &= ~(INLCR | ICRNL);
+        tty.c_iflag &= ~(IXON | IXOFF |IXANY);
+        tty.c_oflag &= ~OPOST;
+        tty.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
+        tty.c_cc[VMIN] = 1;
+        tcflush(serialPort,TCIFLUSH);
         tcsetattr(serialPort, TCSANOW, &tty);   //设置终端控制属性,TCSANOW：不等数据传输完毕就立即改变属性
-		return serialPort;
+	return serialPort;
 }
 

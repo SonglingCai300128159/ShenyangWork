@@ -3,11 +3,6 @@
 #include <string.h>
 #include <unistd.h>
 #include <pthread.h>
-#include "CANDriver/canDriver.h"
-#include "i2cDriver/i2cDriver.h"
-#include "GPSDriver/GPSDriver.h"
-#include "BatteryDriver/BatteryDriver.h"
-#include "RS232Driver/RS232Driver.h"
 #include "dataCollection.h"
 
 
@@ -76,36 +71,45 @@ int sendTRHData(sensorIDs * s){
     
     sendi2cCommand(s->i2cID, co);
     receivei2cData(s->i2cID,&sd);
-
-    int data[8]={0};
-    data[0]=0x5F;
-    data[1]=0x15;
-    data[2]=(int)sd.temperature;
-    data[3]=(sd.temperature-data[2])*100;
-    data[4]=(int)sd.humidity;
-    data[5]=(sd.humidity-data[4])*100;
-
+    int data[2]={0};
+    int temp=(int)sd.temperature;
+    int temp2=(int)((sd.temperature-temp)*100);
+    data[0]=0x5F15*256*256+temp*256+temp2;
+    temp=(int)sd.humidity;
+    temp2=(int)((sd.humidity-temp)*100);
+    data[1]=(temp*256+temp2)*256*256;
+    //printf("%f %f\n",sd.temperature,sd.humidity);
+    
     return write(s->RS232ID,data,8);
 }
 
 int sendGPSData(sensorIDs * s){
     gpsData gd;
 
-	int f=getGpsData(s->gpsID,&gd);
+    int f=getGpsData(s->gpsID,&gd);
     if(f<0){
         printf("Read GPSData Invaild\n");
-        return -1;
+        int data[8]={0};
+        data[0]=0x5F150000;
+        data[1]=0x00000000;
+    
+        return write(s->RS232ID,data,8);
     }
     
-    int data[8]={0};
-    data[0]=0x5F;
-    data[1]=0x15;
-    data[2]=(int)gd.latitude.value;
-    data[3]=(gd.latitude.value-data[2])*100;
-    data[4]=(int)gd.longitude.value;
-    data[5]=(gd.longitude.value-data[4])*100;
-    data[6]=(int)gd.height;
-    data[7]=(gd.height-data[6])*100;
+    int data[2]={0};
+    int temp,temp2;
+    
+    temp=(int)gd.latitude.value;
+    temp2=(int)((gd.latitude.value-temp)*100);
+    data[0]=0x5f15*256*256+temp*256+temp2;
+    
+    temp=(int)gd.longitude.value;
+    temp2=(int)((gd.longitude.value-temp)*100);
+    data[1]=(temp*256+temp2)*256*256;
+    
+    temp=(int)gd.height;
+    temp2=(int)((gd.height-temp)*100);
+    data[1]=(temp*256+temp2);
     
     return write(s->RS232ID,data,8);
 }
@@ -113,17 +117,35 @@ int sendGPSData(sensorIDs * s){
 int sendBatteryData(sensorIDs * s){
     batteryStatue b;
 
-	batteryData(s->batteryID,&b);
+    batteryData(s->batteryID,&b);
 
-    int data[8]={0};
-    data[0]=0x5F;
-    data[1]=0x15;
-    data[2]=(int)b.totalVotage;
-    data[3]=(b.totalVotage-data[2])*100;
-    data[4]=(int)b.totalCurrent;
-    data[5]=(b.totalCurrent-data[4])*100;
-    data[6]=(int)b.remainingCapacity;
-    data[7]=(b.remainingCapacity-data[6])*100;
+    int data[2]={0};
+    int temp,temp2;
+    
+    temp=(int)b.totalVotage;
+    temp2=(int)((b.totalVotage-temp)*100);
+    data[0]=0x5f15*256*256+temp*256+temp2;
+    
+    temp=(int)b.totalCurrent;
+    temp2=(int)((b.totalCurrent-temp)*100);
+    data[1]=(temp*256+temp2)*256*256;
+    //printf("%d %d %x\n",temp,temp2,data[1]);
+    
+    temp=(int)(b.remainingCapacity/100);
+    temp2=(int)(b.remainingCapacity-temp*100);
+    data[1]=data[1]+(temp*256+temp2);
+    //printf("%d %d %x\n",temp,temp2,data[1]);
+    
+    //printf("%f %f %f\n",b.totalVotage,b.totalCurrent,b.remainingCapacity);
     
     return write(s->RS232ID,data,8);
+ }
+
+int main(){
+	sensorIDs s;
+	initialSensor(0x11,0x19,&s);
+	sendTRHData(&s);
+	sendGPSData(&s);
+	sendBatteryData(&s);
+	return 0;
 }

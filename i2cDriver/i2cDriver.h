@@ -1,3 +1,5 @@
+#ifndef _I2CDRIVER_H
+#define _I2CDRIVER_H
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -22,3 +24,4 @@ enum sht40Command{
 int initialI2C();
 int sendi2cCommand(int fd, enum sht40Command c);
 int receivei2cData(int fd,sht40Data * d);
+#endif
