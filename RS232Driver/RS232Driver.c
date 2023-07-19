@@ -8,6 +8,7 @@
 
 int RS232SInitial(char * addr,int vmin){
 	int serialPort = open(addr, O_RDWR);
+	printf("sp:%d\n",serialPort);
         if (serialPort < 0) {
                 perror("Error opening serial port");
                 return -1;

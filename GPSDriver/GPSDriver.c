@@ -7,7 +7,7 @@
 #include "GPSDriver.h"
 
 int gpsInitial(){
-	int serialPort = open("/dev/ttyUSB0", O_RDWR);
+	int serialPort = open("/dev/ttyUSB1", O_RDWR);
         if (serialPort < 0) {
                 perror("Error opening serial port");
                 return -1;
