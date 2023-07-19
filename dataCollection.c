@@ -28,7 +28,7 @@ int initialSensor(int canID,int masterID,sensorIDs * s){
         return -1;
     }
     s->masterID=masterID;
-    s->RS232ID=RS232SInitial();
+    s->RS232ID=RS232SInitial("/dev/ttyS5",1);
     if(s->RS232ID<0){
         printf("Initial RS232 Error\n");
         return -1;

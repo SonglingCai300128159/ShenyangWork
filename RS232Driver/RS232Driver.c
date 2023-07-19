@@ -6,8 +6,8 @@
 #include <stdlib.h>
 #include "RS232Driver.h"
 
-int RS232SInitial(){
-	int serialPort = open("/dev/ttyS5", O_RDWR);
+int RS232SInitial(char * addr,int vmin){
+	int serialPort = open(addr, O_RDWR);
         if (serialPort < 0) {
                 perror("Error opening serial port");
                 return -1;
@@ -30,7 +30,7 @@ int RS232SInitial(){
         tty.c_iflag &= ~(IXON | IXOFF |IXANY);
         tty.c_oflag &= ~OPOST;
         tty.c_lflag &= ~(ICANON | ECHO | ECHOE | ISIG);
-        tty.c_cc[VMIN] = 1;
+        tty.c_cc[VMIN] = vmin;
         tcflush(serialPort,TCIFLUSH);
         tcsetattr(serialPort, TCSANOW, &tty);   //设置终端控制属性,TCSANOW：不等数据传输完毕就立即改变属性
 	return serialPort;

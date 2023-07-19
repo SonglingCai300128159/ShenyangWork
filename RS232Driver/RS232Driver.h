@@ -7,5 +7,5 @@
 #include <termios.h>
 #include <stdlib.h>
 
-int RS232SInitial();
+int RS232SInitial(char * addr,int vmin);
 #endif
