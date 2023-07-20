@@ -14,3 +14,11 @@ typedef struct{
     int CanID;
     int RS232ID;
 }communicationIDs;
+
+int motionControlInitial(int selfCanID, char * addr,communicationIDs * c);
+int transferCommand(communicationIDs * c);
+int translateAndSendCommand(int * data);
+int goStraight(int * data);
+int swerve(int * data);
+int extend(int * data);
+int cameraMoving(int * data);
