@@ -17,8 +17,8 @@ typedef struct{
 
 int motionControlInitial(int selfCanID, char * addr,communicationIDs * c);
 int transferCommand(communicationIDs * c);
-int translateAndSendCommand(int * data);
-int goStraight(int * data);
-int swerve(int * data);
-int extend(int * data);
-int cameraMoving(int * data);
+int translateAndSendCommand(int * data,communicationIDs * c);
+int goStraight(int * data,communicationIDs * c);
+int swerve(int * data,communicationIDs * c);
+int extend(int * data,communicationIDs * c);
+int cameraMoving(int * data,communicationIDs * c);
