@@ -13,6 +13,7 @@
 typedef struct{
     int CanID;
     int RS232ID;
+    int turingDiff;
 }communicationIDs;
 
 int motionControlInitial(int selfCanID, char * addr,communicationIDs * c);

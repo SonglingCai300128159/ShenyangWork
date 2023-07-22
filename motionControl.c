@@ -20,6 +20,7 @@ int motionControlInitial(int selfCanID, char * addr,communicationIDs * c){
         printf("Initial RS232 Error\n");
         return -1;
     }
+    c->turingDiff=0x05;
     return 1;
 }
 
@@ -72,7 +73,38 @@ int goStraight(int * data,communicationIDs * c){
 	return 1;
 }
 
-int swerve(int * data,communicationIDs * c){}
+int swerve(int * data,communicationIDs * c){
+    if(data[1]==0xAA){
+        int leftSpeed=((data[3]*256+data[4])*256+data[5])*256+data[6]-(c->turingDiff);
+        int rightSpeed=((data[3]*256+data[4])*256+data[5])*256+data[6]+(c->turingDiff);
+        int setSpeed0[8]={0x11,0x11,0x00,(leftSpeed/256/256/256),(leftSpeed/256/256%256),(leftSpeed/256%256),(leftSpeed%256),((0x11+0x11+0x00+(leftSpeed/256/256/256)+(leftSpeed/256/256%256)+(leftSpeed/256%256)+(leftSpeed%256))&0xff)};
+        sendCan(c->CanID,0x260,8,setSpeed0);
+        int setSpeed1[8]={0x11,0x11,0x11,(leftSpeed/256/256/256),(leftSpeed/256/256%256),(leftSpeed/256%256),(leftSpeed%256),((0x11+0x11+0x11+(leftSpeed/256/256/256)+(leftSpeed/256/256%256)+(leftSpeed/256%256)+(leftSpeed%256))&0xff)};
+        sendCan(c->CanID,0x260,8,setSpeed1);
+        int setSpeed2[8]={0x11,0x11,0x22,(leftSpeed/256/256/256),(leftSpeed/256/256%256),(leftSpeed/256%256),(leftSpeed%256),((0x11+0x11+0x22+(leftSpeed/256/256/256)+(leftSpeed/256/256%256)+(leftSpeed/256%256)+(leftSpeed%256))&0xff)};
+        sendCan(c->CanID,0x260,8,setSpeed2);
+        int setSpeed3[8]={0x11,0x11,0x33,(leftSpeed/256/256/256),(leftSpeed/256/256%256),(leftSpeed/256%256),(leftSpeed%256),((0x11+0x11+0x33+(leftSpeed/256/256/256)+(leftSpeed/256/256%256)+(leftSpeed/256%256)+(leftSpeed%256))&0xff)};
+        sendCan(c->CanID,0x260,8,setSpeed3);
+        int setDirection[8]={0x11,0x22,0xFF,0x55,0x11,0x00,0x00,((0x11+0x22+0xFF+0x55+0x11+0x00+0x00)&0xff)};
+        sendCan(c->CanID,0x260,8,setDirection);
+    }else if(data[1]==0xBB){
+        int leftSpeed=((data[3]*256+data[4])*256+data[5])*256+data[6]+(c->turingDiff);
+        int rightSpeed=((data[3]*256+data[4])*256+data[5])*256+data[6]-(c->turingDiff);
+        int setSpeed0[8]={0x11,0x11,0x00,(leftSpeed/256/256/256),(leftSpeed/256/256%256),(leftSpeed/256%256),(leftSpeed%256),((0x11+0x11+0x00+(leftSpeed/256/256/256)+(leftSpeed/256/256%256)+(leftSpeed/256%256)+(leftSpeed%256))&0xff)};
+        sendCan(c->CanID,0x260,8,setSpeed0);
+        int setSpeed1[8]={0x11,0x11,0x11,(leftSpeed/256/256/256),(leftSpeed/256/256%256),(leftSpeed/256%256),(leftSpeed%256),((0x11+0x11+0x11+(leftSpeed/256/256/256)+(leftSpeed/256/256%256)+(leftSpeed/256%256)+(leftSpeed%256))&0xff)};
+        sendCan(c->CanID,0x260,8,setSpeed1);
+        int setSpeed2[8]={0x11,0x11,0x22,(leftSpeed/256/256/256),(leftSpeed/256/256%256),(leftSpeed/256%256),(leftSpeed%256),((0x11+0x11+0x22+(leftSpeed/256/256/256)+(leftSpeed/256/256%256)+(leftSpeed/256%256)+(leftSpeed%256))&0xff)};
+        sendCan(c->CanID,0x260,8,setSpeed2);
+        int setSpeed3[8]={0x11,0x11,0x33,(leftSpeed/256/256/256),(leftSpeed/256/256%256),(leftSpeed/256%256),(leftSpeed%256),((0x11+0x11+0x33+(leftSpeed/256/256/256)+(leftSpeed/256/256%256)+(leftSpeed/256%256)+(leftSpeed%256))&0xff)};
+        sendCan(c->CanID,0x260,8,setSpeed3);
+        int setDirection[8]={0x11,0x22,0xFF,0x55,0x11,0x00,0x00,((0x11+0x22+0xFF+0x55+0x11+0x00+0x00)&0xff)};
+        sendCan(c->CanID,0x260,8,setDirection);
+    }else{
+        c->turingDiff=((data[3]*256+data[4])*256+data[5])*256+data[6];
+    }
+}
+
 int extend(int * data,communicationIDs * c){
 	int setHeight[8]={0x44,0x33,0x00,data[3],data[4],data[5],data[6],((0x44+0x33+data[3]+data[4]+data[5]+data[6])&0xff)};
 	sendCan(c->CanID,0x260,8,setHeight);
@@ -81,6 +113,7 @@ int extend(int * data,communicationIDs * c){
 	sendCan(c->CanID,0x260,8,doExtend);
 	return 1;
 }
+
 int cameraMoving(int * data,communicationIDs * c){
 	if(data[2]==0x00){
 		int setDirection[8]={0x55,0x33,0x00,data[3],data[4],data[5],data[6],((0x55+0x33+data[3]+data[4]+data[5]+data[6])&0xff)};
