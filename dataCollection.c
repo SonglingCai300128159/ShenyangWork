@@ -28,7 +28,7 @@ int initialSensor(int canID,int masterID,sensorIDs * s){
         return -1;
     }
     s->masterID=masterID;
-    s->RS232ID=RS232SInitial("/dev/ttyS5",1);
+    s->RS232ID=RS232SInitial("/dev/ttyS1",1);
     if(s->RS232ID<0){
         printf("Initial RS232 Error\n");
         return -1;
@@ -78,15 +78,16 @@ int sendTRHData(sensorIDs * s){
     temp=(int)sd.humidity;
     temp2=(int)((sd.humidity-temp)*100);
     data[1]=(temp*256+temp2)*256*256;
-    //printf("%f %f\n",sd.temperature,sd.humidity);
+    printf("%f %f\n",sd.temperature,sd.humidity);
     
     return write(s->RS232ID,data,8);
 }
 
 int sendGPSData(sensorIDs * s){
     gpsData gd;
-
+    //printf("2***\n");
     int f=getGpsData(s->gpsID,&gd);
+    //printf("***\n");
     if(f<0){
         printf("Read GPSData Invaild\n");
         int data[8]={0};
@@ -145,7 +146,10 @@ int main(){
 	sensorIDs s;
 	initialSensor(0x11,0x19,&s);
 	sendTRHData(&s);
+	printf("1\n");
 	sendGPSData(&s);
+	printf("2\n");
 	sendBatteryData(&s);
+	printf("3\n");
 	return 0;
 }

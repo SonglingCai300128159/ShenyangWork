@@ -27,7 +27,7 @@ int gpsInitial(){
         tty.c_cflag &= ~PARENB;
         tty.c_cflag &= ~CSTOPB;
         tcsetattr(serialPort, TCSANOW, &tty);   //设置终端控制属性,TCSANOW：不等数据传输完毕就立即改变属性
-		return serialPort;
+	return serialPort;
 }
 
 char buffer[1024]="";
@@ -40,6 +40,7 @@ int getGpsData(int serialPort,gpsData * igd){
 		char *rawh;
 		char *flag;
 		int directionValue;
+		//printf("gps1\n");
                 int bytes_read = read(serialPort, buffer, sizeof(buffer));
                 //printf("%d Received: %s\n", strlen(buffer),buffer);
                 if(strlen(buffer) >1 && NULL != strstr(buffer,target)){
