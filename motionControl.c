@@ -10,34 +10,39 @@
 #include "motionControl.h"
 
 int motionControlInitial(int selfCanID, char * addr,communicationIDs * c){
-    c->CanID = initialCan(selfCanID);
+    c->CanID = initialCan(selfCanID);// CAN port
     if(c->CanID<0){
         printf("Initial Can Error\n");
         return -1;
     }
-    c->RS232ID=RS232SInitial(addr,1);
+    c->RS232ID=RS232SInitial(addr,1); //wireless port
     if(c->RS232ID<0){
         printf("Initial RS232 Error\n");
+        return -1;
+    }
+    c->RS485ID=RS232SInitial("/dev/ttyS1",1); //4G port
+    if(c->RS232ID<0){
+        printf("Initial RS485 Error\n");
         return -1;
     }
     c->turingDiff=0x3C;
     return 1;
 }
 
-int transferCommand(communicationIDs * c){
+int transferCommand(communicationIDs * c,sensorIDs * s){
     int data[8]={0};
     while(1){
         for(int i=0;i<8;i++){
             read(c->RS232ID,&data[i],1);
             //printf("%x\n",data[i]);
         }
-        translateAndSendCommand(data,c);
+        translateAndSendCommand(data,c,s);
         //sendCan(c->CanID,0x260,8,data);
         
     }
 }
 
-int translateAndSendCommand(int * data,communicationIDs * c){
+int translateAndSendCommand(int * data,communicationIDs * c,sensorIDs * s){
     switch(data[0]){
         case 0x11:
             goStraight(data,c);
@@ -51,6 +56,10 @@ int translateAndSendCommand(int * data,communicationIDs * c){
         case 0x55:
             cameraMoving(data,c);
             break;
+        case 0x5F:
+            sendSensorData(data,s);
+        case 0xFE:
+            sendCan(c->CanID,0x0000,8,data);
               
 
     }
@@ -143,12 +152,16 @@ int cameraMoving(int * data,communicationIDs * c){
 
 int main(){
     communicationIDs c;
-    int data[]={0x44,0xee,0x00,0x02,0x9a,0x10,0x68,0x00};
+    sensorIDs s;
+    int selfCanID=0x11;
+    int data[]={0x5F,0x15,0xC0,0x02,0x9a,0x10,0x68,0x00};
     int data2[]={0x11,0xCC,0xFF,0x00,0x00,0x01,0x4d,0x00};
-    motionControlInitial(0x11,"/dev/ttyUSB0",&c);
+    motionControlInitial(selfCanID,"/dev/ttyUSB0",&c);
+    dataCollectionInitial(selfCanID,&s,&c);
+    translateAndSendCommand(data,&c,&s);
     //extend(data,&c);
     /*sleep(5);*/
     //goStraight(data2,&c);
-    transferCommand(&c);
+    transferCommand(&c,&s);
     return 0;
 }
