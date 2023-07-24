@@ -31,7 +31,7 @@ int motionControlInitial(int selfCanID, char * addr,communicationIDs * c){
     return 1;
 }
 
-void * transferCommandFromWireless(IDs * id){
+void * transferCommandFromWireless(IDs * id){ //使用无线收发指令
     int data[8]={0};
     while(1){
         for(int i=0;i<8;i++){
@@ -44,7 +44,7 @@ void * transferCommandFromWireless(IDs * id){
     }
 }
 
-void * transferCommandFrom4G(IDs * id){
+void * transferCommandFrom4G(IDs * id){ //使用4g收发指令
     int data[8]={0};
     printf("tc4G:%d\n",id->c.RS485ID);
     while(1){
@@ -61,27 +61,27 @@ void * transferCommandFrom4G(IDs * id){
 int translateAndSendCommand(int * data,communicationIDs * c,sensorIDs * s){
     switch(data[0]){
         case 0x11:
-            goStraight(data,c);
+            goStraight(data,c); //直行
             break;
         case 0x33:
-            swerve(data,c);
+            swerve(data,c); //转弯
             break;
         case 0x44:
-            extend(data,c);
+            extend(data,c); //举升
             break;
         case 0x55:
-            cameraMoving(data,c);
+            cameraMoving(data,c); //摄像头运动
             break;
         case 0x5F:
-            sendSensorData(data,s);
+            sendSensorData(data,s); //向4G发送收集到的数据
         case 0xFE:
-            sendCan(c->CanID,0x0000,8,data);
+            sendCan(c->CanID,0x0000,8,data); //串口IO控制器
               
 
     }
 }
 
-int goStraight(int * data,communicationIDs * c){
+int goStraight(int * data,communicationIDs * c){ 
     int setSpeed[8]={0x11,0x11,data[2],data[3],data[4],data[5],data[6],((0x11+0x11+data[2]+data[3]+data[4]+data[5]+data[6])&0xff)};
 	sendCan(c->CanID,0x260,8,setSpeed);
 	usleep(20000);
@@ -101,10 +101,10 @@ int goStraight(int * data,communicationIDs * c){
 
 int swerve(int * data,communicationIDs * c){
     if(data[1]==0xAA){
-        int leftSpeed=((data[3]*256+data[4])*256+data[5])*256+data[6]-(c->turingDiff);
+        int leftSpeed=((data[3]*256+data[4])*256+data[5])*256+data[6]-(c->turingDiff); //计算左右轮数据
         int rightSpeed=((data[3]*256+data[4])*256+data[5])*256+data[6]+(c->turingDiff);
         int setSpeed0[8]={0x11,0x11,0x00,(leftSpeed/256/256/256),(leftSpeed/256/256%256),(leftSpeed/256%256),(leftSpeed%256),((0x11+0x11+0x00+(leftSpeed/256/256/256)+(leftSpeed/256/256%256)+(leftSpeed/256%256)+(leftSpeed%256))&0xff)};
-        sendCan(c->CanID,0x260,8,setSpeed0);
+        sendCan(c->CanID,0x260,8,setSpeed0);//将leftspeed速度按每两位分离，依次放入data[3][4][5][6]，以下同理
         usleep(20000);
         int setSpeed1[8]={0x11,0x11,0x11,(rightSpeed/256/256/256),(rightSpeed/256/256%256),(rightSpeed/256%256),(rightSpeed%256),((0x11+0x11+0x11+(rightSpeed/256/256/256)+(rightSpeed/256/256%256)+(rightSpeed/256%256)+(rightSpeed%256))&0xff)};
         sendCan(c->CanID,0x260,8,setSpeed1);
@@ -183,7 +183,7 @@ int main(){
     /*sleep(5);*/
     //goStraight(data2,&c);
     pthread_t Pthread[2];
-    int ret = pthread_create(&Pthread[0], NULL, transferCommandFrom4G, &i);
+    int ret = pthread_create(&Pthread[0], NULL, transferCommandFrom4G, &i); //创建线程
     transferCommandFromWireless(&i);
     return 0;
 }

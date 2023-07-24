@@ -22,12 +22,12 @@ int dataCollectionInitial(int canID,sensorIDs * s,communicationIDs * c){
         printf("Initial battery Error\n");
         return -1;
     }
-    s->RS485ID=c->RS485ID;
+    s->RS485ID=c->RS485ID; //4g端口
     
     return 1;
 }
 
-int getCommandFromCan(sensorIDs * s){
+int getCommandFromCan(sensorIDs * s){ //该函数没有作用，忘删除了
     while(1){
         int command[8]={0};
         if(receiveCan(s->openCanID,command)>0){
