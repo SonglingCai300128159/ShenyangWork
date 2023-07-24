@@ -15,11 +15,13 @@ int motionControlInitial(int selfCanID, char * addr,communicationIDs * c){
         printf("Initial Can Error\n");
         return -1;
     }
+    printf("wireless");
     c->RS232ID=RS232SInitial(addr,1); //wireless port
     if(c->RS232ID<0){
         printf("Initial RS232 Error\n");
         return -1;
     }
+    printf("4G");
     c->RS485ID=RS232SInitial("/dev/ttyS1",1); //4G port
     if(c->RS232ID<0){
         printf("Initial RS485 Error\n");
@@ -29,14 +31,28 @@ int motionControlInitial(int selfCanID, char * addr,communicationIDs * c){
     return 1;
 }
 
-int transferCommand(communicationIDs * c,sensorIDs * s){
+void * transferCommandFromWireless(IDs * id){
     int data[8]={0};
     while(1){
         for(int i=0;i<8;i++){
-            read(c->RS232ID,&data[i],1);
+            read(id->c.RS232ID,&data[i],1);
             //printf("%x\n",data[i]);
         }
-        translateAndSendCommand(data,c,s);
+        translateAndSendCommand(data,&(id->c),&(id->s));
+        //sendCan(c->CanID,0x260,8,data);
+        
+    }
+}
+
+void * transferCommandFrom4G(IDs * id){
+    int data[8]={0};
+    printf("tc4G:%d\n",id->c.RS485ID);
+    while(1){
+        for(int i=0;i<8;i++){
+            read(id->c.RS485ID,&data[i],1);
+            //printf("%x\n",data[i]);
+        }
+        translateAndSendCommand(data,&(id->c),&(id->s));
         //sendCan(c->CanID,0x260,8,data);
         
     }
@@ -151,17 +167,23 @@ int cameraMoving(int * data,communicationIDs * c){
 }
 
 int main(){
-    communicationIDs c;
-    sensorIDs s;
+    communicationIDs co;
+    sensorIDs se;
+    IDs i;
+    
     int selfCanID=0x11;
     int data[]={0x5F,0x15,0xC0,0x02,0x9a,0x10,0x68,0x00};
     int data2[]={0x11,0xCC,0xFF,0x00,0x00,0x01,0x4d,0x00};
-    motionControlInitial(selfCanID,"/dev/ttyUSB0",&c);
-    dataCollectionInitial(selfCanID,&s,&c);
-    translateAndSendCommand(data,&c,&s);
+    motionControlInitial(selfCanID,"/dev/ttyUSB0",&co);
+    dataCollectionInitial(selfCanID,&se,&co);
+    i.c=co;
+    i.s=se;
+    //translateAndSendCommand(data,&c,&s);
     //extend(data,&c);
     /*sleep(5);*/
     //goStraight(data2,&c);
-    transferCommand(&c,&s);
+    pthread_t Pthread[2];
+    int ret = pthread_create(&Pthread[0], NULL, transferCommandFrom4G, &i);
+    transferCommandFromWireless(&i);
     return 0;
 }

@@ -21,10 +21,16 @@ typedef struct{
 #include "RS232Driver/RS232Driver.h"
 #include "dataCollection.h"
 
+typedef struct{
+    communicationIDs c;
+    sensorIDs s;
+}IDs;
+
 
 
 int motionControlInitial(int selfCanID, char * addr,communicationIDs * c);
-int transferCommand(communicationIDs * c,sensorIDs * s);
+void * transferCommandFromWireless(IDs * i);
+void * transferCommandFrom4G(IDs * i);
 int translateAndSendCommand(int * data,communicationIDs * c,sensorIDs * s);
 int goStraight(int * data,communicationIDs * c);
 int swerve(int * data,communicationIDs * c);
